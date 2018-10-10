@@ -3,45 +3,29 @@ import qs from 'qs';
 import request from 'request';
 import url from 'url';
 
-import {base64hash, base64random, urlEncodeBase64String} from './util';
+import {getPKCEChallengePair} from './cryptoUtils';
 
-interface Config {
-    auth0Audience: string,
-    auth0ClientId: string,
-    auth0Domain: string,
-    auth0Scopes: string,
-    parentWindow: BrowserWindow,
-    useRefreshTokens?: boolean
-}
+let authWindow: BrowserWindow;
 
 export async function getToken(config: Config) {
     const pkcePair = getPKCEChallengePair();
-
-    const authCodeURL = `https://${config.auth0Domain}/authorize?`
-        + qs.stringify({
-            audience: config.auth0Audience,
-            scope: config.auth0Scopes,
-            response_type: 'code',
-            client_id: config.auth0ClientId,
-            code_challenge: pkcePair.challenge,
-            code_challenge_method: 'S256',
-            redirect_uri: `https://${config.auth0Domain}/mobile`
-        });
-
+    const authCodeURL = getAuthCodeEndpoint(config, pkcePair);
     const authCode = await getAuthCode(config, authCodeURL);
     const accessToken = await getAccessToken(config, authCode, pkcePair);
 }
 
-function getPKCEChallengePair(): PKCEPair {
-    const seed = base64random(32);
-    const verifier = urlEncodeBase64String(seed);
-    const challenge = urlEncodeBase64String(base64hash(verifier));
-    return {verifier, challenge};
-}
-
+/**
+ * Creates user login window.
+ * The user passes their username and password, along with the PKCE challenge value.
+ * In return, Auth0 redirects us to a page containing an authorization code in the URL.
+ * The code is not yet a token. To obtain that, we must do a further request with the PKCE verifier in tow.
+ * Doing this means that a malicious actor who intercepts the Auth0 redirect cannot hijack the user's credentials.
+ */
 async function getAuthCode(config: Config, authCodeURL: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        const authWindow = new BrowserWindow({
+        if (authWindow) authWindow.destroy();
+
+        authWindow = new BrowserWindow({
             width: 800,
             height: 600,
             parent: config.parentWindow,
@@ -61,6 +45,18 @@ async function getAuthCode(config: Config, authCodeURL: string): Promise<string>
         authWindow.on('close', reject);
 
         authWindow.loadURL(authCodeURL);
+    });
+}
+
+function getAuthCodeEndpoint(config: Config, pkcePair: PKCEPair) {
+    return `https://${config.auth0Domain}/authorize?`+ qs.stringify({
+        audience: config.auth0Audience,
+        scope: config.auth0Scopes,
+        response_type: 'code',
+        client_id: config.auth0ClientId,
+        code_challenge: pkcePair.challenge,
+        code_challenge_method: 'S256',
+        redirect_uri: `https://${config.auth0Domain}/mobile`
     });
 }
 

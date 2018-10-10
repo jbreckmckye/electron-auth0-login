@@ -1,3 +1,12 @@
+interface Config {
+    auth0Audience: string,
+    auth0ClientId: string,
+    auth0Domain: string,
+    auth0Scopes: string,
+    parentWindow: any,
+    useRefreshTokens?: boolean
+}
+
 interface PKCEPair {
     verifier: string,
     challenge: string
