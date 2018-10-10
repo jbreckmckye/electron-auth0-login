@@ -1,0 +1,28 @@
+{
+  "name": "electron-auth0-login",
+  "version": "1.0.0",
+  "description": "Provides Auth0 authentication services for your Electron.js applicatioin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Electron",
+    "Auth0"
+  ],
+  "author": "Jimmy Breck-McKye",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/qs": "6.5.1",
+    "@types/request": "2.47.1",
+    "electron": "3.0.3",
+    "typescript": "3.1.2"
+  },
+  "dependencies": {
+    "qs": "6.5.2",
+    "request": "2.88.0"
+  },
+  "peerDependencies": {
+    "electron": "3.0.3"
+  }
+}
