@@ -9,7 +9,7 @@ const keytar = requirePeer('keytar', {optional: true});
 
 import {getPKCEChallengePair} from './cryptoUtils';
 
-export default class TokenHandler {
+export default class ElectronAuth0Login {
     private config: Config;
     private tokenProperties: TokenProperties | null;
     private useRefreshToken: boolean;
