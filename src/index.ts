@@ -1,87 +1,155 @@
-import {BrowserWindow, Event as ElectronEvent} from 'electron';
+import codependency from 'codependency';
+import {BrowserWindow} from 'electron';
 import qs from 'qs';
-import request from 'request';
+import request from 'request-promise-native';
 import url from 'url';
+
+const requirePeer = codependency.register(module);
+const keytar = requirePeer('keytar', {optional: true});
 
 import {getPKCEChallengePair} from './cryptoUtils';
 
-let authWindow: BrowserWindow;
+export default class TokenHandler {
+    private config: Config;
+    private tokenProperties: TokenProperties | null;
+    private useRefreshToken: boolean;
 
-export async function getToken(config: Config) {
-    const pkcePair = getPKCEChallengePair();
-    const authCodeURL = getAuthCodeEndpoint(config, pkcePair);
-    const authCode = await getAuthCode(config, authCodeURL);
-    const accessToken = await getAccessToken(config, authCode, pkcePair);
-}
+    constructor(config: Config) {
+        this.config = config;
+        this.tokenProperties = null;
+        this.useRefreshToken = !!(config.useRefreshTokens && config.applicationName && keytar);
 
-/**
- * Creates user login window.
- * The user passes their username and password, along with the PKCE challenge value.
- * In return, Auth0 redirects us to a page containing an authorization code in the URL.
- * The code is not yet a token. To obtain that, we must do a further request with the PKCE verifier in tow.
- * Doing this means that a malicious actor who intercepts the Auth0 redirect cannot hijack the user's credentials.
- */
-async function getAuthCode(config: Config, authCodeURL: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        if (authWindow) authWindow.destroy();
+        if (config.useRefreshTokens && !config.applicationName) {
+            console.warn('electron-auth0-login: cannot use refresh tokens without an application name');
+        }
 
-        authWindow = new BrowserWindow({
-            width: 800,
-            height: 600,
-            parent: config.parentWindow,
-            title: 'Log in',
-            backgroundColor: '#202020'
-        });
+        if (config.useRefreshTokens && !keytar) {
+            console.warn('electron-auth0-login: cannot use refresh tokens without node-keytar installed');
+        }
+    }
 
-        authWindow.webContents.on('did-navigate' as any, (event: ElectronEvent, href: string) => {
-            const location = url.parse(href);
-            const query = qs.parse(location.search || '', {ignoreQueryPrefix: true});
-            if (query.code) {
-                resolve(query.code);
-                authWindow.destroy();
+    public async logout() {
+        this.tokenProperties = null;
+        if (this.useRefreshToken) {
+            await keytar.deletePassword(this.config.applicationName, 'refresh-token');
+        }
+    }
+
+    public async getToken(): Promise<string> {
+        if (this.tokenProperties && timeToTokenExpiry(this.tokenProperties) > 60) {
+            // We have a valid token - use it
+            return this.tokenProperties.access_token;
+
+        } else if (this.useRefreshToken) {
+            // See if we can use a refresh token
+            const refreshToken = await keytar.getPassword(this.config.applicationName, 'refresh-token');
+
+            if (refreshToken) {
+                try {
+                    this.tokenProperties = await this.sendRefreshToken(refreshToken);
+                    return this.tokenProperties.access_token;
+
+                } catch (err) {
+                    console.warn('electron-auth0-login: could not use refresh token, may have been revoked');
+                    keytar.deletePassword(this.config.applicationName, 'refresh-token');
+                    return this.login();
+                }
+
+            } else {
+                return this.login();
             }
-        });
 
-        authWindow.on('close', reject);
+        } else {
+            return this.login();
+        }
+    }
 
-        authWindow.loadURL(authCodeURL);
-    });
-}
-
-function getAuthCodeEndpoint(config: Config, pkcePair: PKCEPair) {
-    return `https://${config.auth0Domain}/authorize?`+ qs.stringify({
-        audience: config.auth0Audience,
-        scope: config.auth0Scopes,
-        response_type: 'code',
-        client_id: config.auth0ClientId,
-        code_challenge: pkcePair.challenge,
-        code_challenge_method: 'S256',
-        redirect_uri: `https://${config.auth0Domain}/mobile`
-    });
-}
-
-async function getAccessToken(config: Config, authCode: string, pkcePair: PKCEPair): Promise<AccessTokenMeta> {
-    return new Promise<AccessTokenMeta>((resolve, reject) => {
-        request.post(`https://${config.auth0Domain}/oauth/token`, {
+    private async sendRefreshToken(refreshToken: string): Promise<TokenProperties> {
+        return request(`https://${this.config.auth0Domain}/oauth/token`, {
+            method: 'POST',
             json: true,
             body: {
-                grant_type: 'authorization code',
-                client_id: config.auth0ClientId,
+                grant_type: 'refresh_token',
+                client_id: this.config.auth0ClientId,
+                refresh_token: refreshToken
+            }
+        }).promise().then(toTokenMeta);
+    }
+
+    private async login() {
+        const pkcePair = getPKCEChallengePair();
+        const authCode = await this.getAuthCode(pkcePair);
+
+        this.tokenProperties = await this.exchangeAuthCodeForToken(authCode, pkcePair);
+
+        if (this.useRefreshToken && this.tokenProperties.refresh_token) {
+            keytar.setPassword(this.config.applicationName, 'refresh-token', this.tokenProperties.refresh_token);
+        }
+
+        return this.tokenProperties.access_token;
+    }
+
+    private async getAuthCode(pkcePair: PKCEPair): Promise<string> {       
+        return new Promise<string>((resolve, reject) => {
+            const authCodeUrl = `https://${this.config.auth0Domain}/authorize?` + qs.stringify({
+                audience: this.config.auth0Audience,                
+                scope: this.config.auth0Scopes,
+                response_type: 'code',
+                client_id: this.config.auth0ClientId,
+                code_challenge: pkcePair.challenge,
+                code_challenge_method: 'S256',
+                redirect_uri: `https://${this.config.auth0Domain}/mobile`
+            });
+
+            const authWindow = new BrowserWindow({
+                width: 800,
+                height: 600,
+                parent: this.config.parentWindow,
+                title: 'Log in',
+                backgroundColor: '#202020'
+            });
+    
+            authWindow.webContents.on('did-navigate' as any, (event: any, href: string) => {
+                const location = url.parse(href);
+                if (location.pathname == '/mobile') {
+                    const query = qs.parse(location.search || '', {ignoreQueryPrefix: true});
+                    resolve(query.code);
+                    authWindow.destroy();
+                }
+            });
+    
+            authWindow.on('close', reject);
+    
+            authWindow.loadURL(authCodeUrl);
+        });
+    }
+
+    private async exchangeAuthCodeForToken(authCode: string, pkcePair: PKCEPair): Promise<TokenProperties> {
+        return request(`https://${this.config.auth0Domain}/oauth/token`, {
+            method: 'POST',
+            json: true,
+            body: {
+                grant_type: 'authorization_code',
+                client_id: this.config.auth0ClientId,
                 code_verifier: pkcePair.verifier,
                 code: authCode,
-                redirect_uri: `https://${config.auth0Domain}/mobile`
-            },
-            callback: (err, httpResponse, body) => {
-                if (err || httpResponse.statusCode >= 400) {
-                    reject(err || httpResponse.statusCode);
-                } else {
-                    const result: AccessTokenMeta = {
-                        auth0Response: body,
-                        time: Date.now()
-                    };
-                    resolve(result);
-                }
+                redirect_uri: `https://${this.config.auth0Domain}/mobile`
             }
-        });
-    });
+        }).promise().then(toTokenMeta);
+    }
+}
+
+function timeToTokenExpiry(tokenMeta: TokenProperties): number {
+    return tokenMeta.created_time + tokenMeta.expires_in - getEpochSeconds();
+}
+
+function toTokenMeta(tokenResponse: Auth0TokenResponse): TokenProperties {
+    return {
+        ...tokenResponse,
+        created_time: getEpochSeconds()
+    };
+}
+
+function getEpochSeconds() {
+    return Date.now() / 1000;
 }
