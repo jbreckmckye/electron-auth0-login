@@ -6,7 +6,7 @@ Usage is simple: you call a `getToken` method, and one of three things happens (
 
 1. If you have a valid token in memory, and won't expire in the next 60 seconds, we return it
 2. If you have a refresh token, we exchange it for a new token
-3. If you have no refresh token (or have refresh tokens disabled), we open a new window with the Auth0 login page.
+3. If you have no refresh token (or have refresh tokens disabled), we open a new window with the Auth0 login page and begin a PKCE flow.
 
 Refresh tokens are stored securely on the user's machine using [node-keytar](https://github.com/atom/node-keytar).
 
@@ -119,3 +119,7 @@ async function doSomethingWithAPI() {
     });
 }
 ```
+
+## Credits
+
+This package is based loosely on @adeperio's Electron PKCE example: https://gist.github.com/adeperio/73ce6680d4b80b45e624ab62bacfbdca
