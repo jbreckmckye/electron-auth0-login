@@ -10,7 +10,6 @@ interface Config {
     // What permissions do we want?
     auth0Scopes: string,
 
-    parentWindow: any,
     useRefreshTokens?: boolean
 }
 

@@ -104,7 +104,7 @@ export default class ElectronAuth0Login {
             const authWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
-                parent: this.config.parentWindow,
+                alwaysOnTop: true,
                 title: 'Log in',
                 backgroundColor: '#202020'
             });
