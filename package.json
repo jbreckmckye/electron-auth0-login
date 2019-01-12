@@ -12,6 +12,14 @@
   ],
   "author": "Jimmy Breck-McKye",
   "license": "MIT",
+  "homepage": "https://github.com/jbreckmckye/electron-auth0-login#readme",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jbreckmckye/electron-auth0-login.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jbreckmckye/electron-auth0-login/issues"
+  },
   "devDependencies": {
     "@types/codependency": "0.1.3",
     "@types/keytar": "4.0.1",
