@@ -16,7 +16,7 @@ Supports TypeScript out of the box.
 
 ### Auth0 setup
 
-Make sure you have an Auth0 application set up and have whitelisted the following redirect URL:
+Make sure you have an Auth0 application set up for your Electron app (as a 'native' type, not 'machine-to-machine') and have whitelisted the following redirect URL:
 
 `https://{your-auth0-domain}/mobile`
 
