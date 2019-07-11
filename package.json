@@ -4,6 +4,7 @@
   "description": "Provides Auth0 authentication services for your Electron.js applicatioin",
   "main": "dist/index.js",
   "scripts": {
+    "example:basic": "npx electron examples/basic/main.js",
     "dist": "tsc"
   },
   "keywords": [
@@ -14,32 +15,36 @@
   "license": "MIT",
   "homepage": "https://github.com/jbreckmckye/electron-auth0-login#readme",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/jbreckmckye/electron-auth0-login.git"
+    "type": "git",
+    "url": "https://github.com/jbreckmckye/electron-auth0-login.git"
   },
   "bugs": {
     "url": "https://github.com/jbreckmckye/electron-auth0-login/issues"
   },
   "devDependencies": {
     "@types/codependency": "0.1.3",
-    "@types/keytar": "4.0.1",
+    "@types/keytar": "^4.0.1",
     "@types/qs": "6.5.1",
     "@types/request": "2.47.1",
     "@types/request-promise-native": "1.0.15",
-    "electron": "3.0.3",
-    "keytar": "4.3.0",
+    "auth0": "^2.18.0",
+    "electron": "^5.0.6",
+    "electron-rebuild": "^1.8.5",
+    "keytar": "^4.11.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "typescript": "3.1.2"
   },
   "dependencies": {
     "codependency": "2.1.0",
-    "qs": "6.5.2"    
+    "qs": "6.5.2"
   },
   "peerDependencies": {
-    "electron": "3.0.3",
+    "electron": "5.0.6",
     "request": "2.88.0",
     "request-promise-native": "1.0.5"
   },
   "optionalPeerDependencies": {
-    "keytar": "4.3.0"
+    "keytar": "4.11.0"
   }
 }

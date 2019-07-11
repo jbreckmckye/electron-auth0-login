@@ -120,6 +120,10 @@ async function doSomethingWithAPI() {
 }
 ```
 
+There is also a basic end to end example in the `examples` folder that will open the auth window and upon sucessfull login, log the user profile to console and open an empty Electron window.
+
+To run: `clientId=CLIENT_ID domain=DOMAIN audience=AUDIENCE npm run example:basic`
+
 ## Credits
 
 This package is based loosely on @adeperio's Electron PKCE example: https://gist.github.com/adeperio/73ce6680d4b80b45e624ab62bacfbdca
