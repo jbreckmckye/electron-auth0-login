@@ -43,7 +43,7 @@ class ElectronAuth0Login {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.tokenProperties && timeToTokenExpiry(this.tokenProperties) > 60) {
                 // We have a valid token - use it
-                return this.tokenProperties.access_token;
+                return this.tokenProperties;
             }
             else if (this.useRefreshToken) {
                 // See if we can use a refresh token
@@ -51,7 +51,7 @@ class ElectronAuth0Login {
                 if (refreshToken) {
                     try {
                         this.tokenProperties = yield this.sendRefreshToken(refreshToken);
-                        return this.tokenProperties.access_token;
+                        return this.tokenProperties;
                     }
                     catch (err) {
                         console.warn('electron-auth0-login: could not use refresh token, may have been revoked');
@@ -78,7 +78,9 @@ class ElectronAuth0Login {
                     client_id: this.config.auth0ClientId,
                     refresh_token: refreshToken
                 }
-            }).promise().then(toTokenMeta);
+            })
+                .promise()
+                .then(toTokenMeta);
         });
     }
     login() {
@@ -89,21 +91,22 @@ class ElectronAuth0Login {
             if (this.useRefreshToken && this.tokenProperties.refresh_token) {
                 keytar.setPassword(this.config.applicationName, 'refresh-token', this.tokenProperties.refresh_token);
             }
-            return this.tokenProperties.access_token;
+            return this.tokenProperties;
         });
     }
     getAuthCode(pkcePair) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
-                const authCodeUrl = `https://${this.config.auth0Domain}/authorize?` + qs_1.default.stringify({
-                    audience: this.config.auth0Audience,
-                    scope: this.config.auth0Scopes,
-                    response_type: 'code',
-                    client_id: this.config.auth0ClientId,
-                    code_challenge: pkcePair.challenge,
-                    code_challenge_method: 'S256',
-                    redirect_uri: `https://${this.config.auth0Domain}/mobile`
-                });
+                const authCodeUrl = `https://${this.config.auth0Domain}/authorize?` +
+                    qs_1.default.stringify({
+                        audience: this.config.auth0Audience,
+                        scope: this.config.auth0Scopes,
+                        response_type: 'code',
+                        client_id: this.config.auth0ClientId,
+                        code_challenge: pkcePair.challenge,
+                        code_challenge_method: 'S256',
+                        redirect_uri: `https://${this.config.auth0Domain}/mobile`
+                    });
                 const authWindow = new electron_1.BrowserWindow({
                     width: 800,
                     height: 600,
@@ -136,7 +139,9 @@ class ElectronAuth0Login {
                     code: authCode,
                     redirect_uri: `https://${this.config.auth0Domain}/mobile`
                 }
-            }).promise().then(toTokenMeta);
+            })
+                .promise()
+                .then(toTokenMeta);
         });
     }
 }

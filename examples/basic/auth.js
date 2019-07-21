@@ -18,7 +18,7 @@ const electronAuth0Login = new ElectronAuth0Login({
 
 function handleAuth() {
   return new Promise((resolve, reject) => {
-    electronAuth0Login.getToken().then((accessToken) => {
+    electronAuth0Login.getToken().then(({ access_token: accessToken }) => {
       authenticationClient.getProfile(accessToken, (err, userProfile) => {
         if (err) reject(err);
 
