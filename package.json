@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "codependency": "2.1.0",
-    "qs": "6.5.2"    
+    "qs": "6.5.2"
   },
   "peerDependencies": {
     "electron": "3.0.3",
     "request": "2.88.0",
-    "request-promise-native": "1.0.5"
+    "request-promise-native": "1.0.7"
   },
   "optionalPeerDependencies": {
     "keytar": "4.3.0"
