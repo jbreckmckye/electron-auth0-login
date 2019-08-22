@@ -1,6 +1,6 @@
 {
   "name": "electron-auth0-login",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provides Auth0 authentication services for your Electron.js applicatioin",
   "main": "dist/index.js",
   "scripts": {
@@ -32,12 +32,12 @@
   },
   "dependencies": {
     "codependency": "2.1.0",
-    "qs": "6.5.2"    
+    "qs": "6.5.2"
   },
   "peerDependencies": {
     "electron": "3.0.3",
     "request": "2.88.0",
-    "request-promise-native": "1.0.5"
+    "request-promise-native": "1.0.7"
   },
   "optionalPeerDependencies": {
     "keytar": "4.3.0"
