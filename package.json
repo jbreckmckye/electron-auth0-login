@@ -1,6 +1,6 @@
 {
   "name": "electron-auth0-login",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Provides Auth0 authentication services for your Electron.js applicatioin",
   "main": "dist/index.js",
   "scripts": {
@@ -14,8 +14,8 @@
   "license": "MIT",
   "homepage": "https://github.com/jbreckmckye/electron-auth0-login#readme",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/jbreckmckye/electron-auth0-login.git"
+    "type": "git",
+    "url": "https://github.com/jbreckmckye/electron-auth0-login.git"
   },
   "bugs": {
     "url": "https://github.com/jbreckmckye/electron-auth0-login/issues"
@@ -35,11 +35,11 @@
     "qs": "6.5.2"
   },
   "peerDependencies": {
-    "electron": "3.0.3",
-    "request": "2.88.0",
-    "request-promise-native": "1.0.7"
+    "electron": "^7.1.9",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
   },
   "optionalPeerDependencies": {
-    "keytar": "4.3.0"
+    "keytar": "^5.0.0"
   }
 }
