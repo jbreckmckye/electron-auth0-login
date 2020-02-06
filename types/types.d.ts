@@ -10,7 +10,9 @@ interface Config {
     // What permissions do we want?
     auth0Scopes: string,
 
-    useRefreshTokens?: boolean
+    useRefreshTokens?: boolean,
+
+    windowConfig?: object
 }
 
 interface PKCEPair {

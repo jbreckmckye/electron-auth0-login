@@ -1,6 +1,6 @@
 {
   "name": "electron-auth0-login",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Provides Auth0 authentication services for your Electron.js applicatioin",
   "main": "dist/index.js",
   "scripts": {

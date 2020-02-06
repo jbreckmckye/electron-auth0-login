@@ -1,5 +1,5 @@
 import codependency from 'codependency';
-import {BrowserWindow} from 'electron';
+import { BrowserWindow } from 'electron';
 import qs from 'qs';
 import request from 'request-promise-native';
 import url from 'url';
@@ -13,11 +13,25 @@ export default class ElectronAuth0Login {
     private config: Config;
     private tokenProperties: TokenProperties | null;
     private useRefreshToken: boolean;
+    private windowConfig = {
+        width: 800,
+        height: 600,
+        alwaysOnTop: true,
+        title: 'Log in',
+        backgroundColor: '#202020'
+    };
 
     constructor(config: Config) {
         this.config = config;
         this.tokenProperties = null;
         this.useRefreshToken = !!(config.useRefreshTokens && config.applicationName && keytar);
+
+        if (config.windowConfig) {
+            this.windowConfig = {
+                ...this.windowConfig,
+                ...config.windowConfig
+            }
+        }
 
         if (config.useRefreshTokens && !config.applicationName) {
             console.warn('electron-auth0-login: cannot use refresh tokens without an application name');
@@ -101,13 +115,7 @@ export default class ElectronAuth0Login {
                 redirect_uri: `https://${this.config.auth0Domain}/mobile`
             });
 
-            const authWindow = new BrowserWindow({
-                width: 800,
-                height: 600,
-                alwaysOnTop: true,
-                title: 'Log in',
-                backgroundColor: '#202020'
-            });
+            const authWindow = new BrowserWindow(this.windowConfig);
     
             authWindow.webContents.on('did-navigate' as any, (event: any, href: string) => {
                 const location = url.parse(href);
