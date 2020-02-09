@@ -21,9 +21,19 @@ const keytar = requirePeer('keytar', { optional: true });
 const cryptoUtils_1 = require("./cryptoUtils");
 class ElectronAuth0Login {
     constructor(config) {
+        this.windowConfig = {
+            width: 800,
+            height: 600,
+            alwaysOnTop: true,
+            title: 'Log in',
+            backgroundColor: '#202020'
+        };
         this.config = config;
         this.tokenProperties = null;
         this.useRefreshToken = !!(config.useRefreshTokens && config.applicationName && keytar);
+        if (config.windowConfig) {
+            this.windowConfig = Object.assign({}, this.windowConfig, config.windowConfig);
+        }
         if (config.useRefreshTokens && !config.applicationName) {
             console.warn('electron-auth0-login: cannot use refresh tokens without an application name');
         }
@@ -104,13 +114,7 @@ class ElectronAuth0Login {
                     code_challenge_method: 'S256',
                     redirect_uri: `https://${this.config.auth0Domain}/mobile`
                 });
-                const authWindow = new electron_1.BrowserWindow({
-                    width: 800,
-                    height: 600,
-                    alwaysOnTop: true,
-                    title: 'Log in',
-                    backgroundColor: '#202020'
-                });
+                const authWindow = new electron_1.BrowserWindow(this.windowConfig);
                 authWindow.webContents.on('did-navigate', (event, href) => {
                     const location = url_1.default.parse(href);
                     if (location.pathname == '/mobile') {

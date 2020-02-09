@@ -7,7 +7,29 @@ import url from 'url';
 const requirePeer = codependency.register(module);
 const keytar = requirePeer('keytar', {optional: true});
 
-import {getPKCEChallengePair} from './cryptoUtils';
+import { getPKCEChallengePair, PKCEPair } from './cryptoUtils';
+
+export interface Config {
+    applicationName?: string,
+    auth0Audience: string, // API we're going to access
+    auth0ClientId: string,
+    auth0Domain: string,
+    auth0Scopes: string, // What permissions do we want?
+    useRefreshTokens?: boolean,
+    windowConfig?: object
+}
+
+interface Auth0TokenResponse {
+    access_token: string,
+    expires_in: number
+    scope: string,
+    refresh_token?: string
+    token_type: string
+}
+
+interface TokenProperties extends Auth0TokenResponse {
+    created_time: number
+}
 
 export default class ElectronAuth0Login {
     private config: Config;
