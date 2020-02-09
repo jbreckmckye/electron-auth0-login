@@ -1,5 +1,10 @@
 import crypto from 'crypto';
 
+export interface PKCEPair {
+    verifier: string,
+    challenge: string
+}
+
 export function getPKCEChallengePair(): PKCEPair {
     const seed = base64random(32);
     const verifier = urlEncodeBase64String(seed);
