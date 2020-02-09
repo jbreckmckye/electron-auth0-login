@@ -76,11 +76,9 @@ export new ElectronAuth0Login({
     auth0Audience: 'https://api.mydomain.com',
     auth0ClientId: 'abc123ghiMyApp',
     auth0Domain: 'my-domain.eu.auth0.com',
-    auth0Scopes: 'given_name profile offline_access' // add 'offline_access'
-
-    // extra properties
-    applicationName: 'my-cool-app',
-    useRefreshTokens: true
+    auth0Scopes: 'given_name profile offline_access', // add 'offline_access'
+    applicationName: 'my-cool-app', // add an application name
+    useRefreshTokens: true // add useRefreshTokens: true
 });
 ```
 
@@ -118,6 +116,35 @@ async function doSomethingWithAPI() {
         }
     });
 }
+```
+
+## Configuring the login window
+
+You can also pass options to the electron `BrowserWindow` by adding a `windowOptions` object to your config, e.g.
+
+```typescript
+const auth = new ElectronAuth0Login({
+    auth0Audience: 'https://api.mydomain.com',
+    auth0ClientId: 'abc123ghiMyApp',
+    auth0Domain: 'my-domain.eu.auth0.com',
+    auth0Scopes: 'given_name profile',
+    windowOptions: {
+        width: 1024,
+        height: 640,
+    }
+});
+```
+
+These options will be merged into the default options, which are
+
+```
+{
+    width: 800,
+    height: 600,
+    alwaysOnTop: true,
+    title: 'Log in',
+    backgroundColor: '#202020'
+};
 ```
 
 ## Credits
