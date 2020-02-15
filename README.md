@@ -32,7 +32,9 @@ npm install request request-promise-native --save
 
 ### Initialisation
 
-In a module available to your main process code (e.g. `auth.ts`):
+**Note: you should add the initialisation code to your main process.**
+
+Create a module called `auth.ts`/`auth.js`: 
 
 ```typescript
 import ElectronAuth0Login from 'electron-auth0-login';
@@ -67,7 +69,7 @@ Call this again every time you upgrade Electron.
 
 ### Initialisation
 
-The application config then requires a few tweaks:
+The application config then requires a few tweaks. Again, this code **must be in your main process, not app process**:
 
 ```typescript
 import ElectronAuth0Login from 'electron-auth0-login';
@@ -84,7 +86,7 @@ export new ElectronAuth0Login({
 
 ## Usage
 
-You can call `getToken` any time you need an auth0 token:
+You can call `getToken` any time you need an auth0 token, in either the main or app process:
 
 In main process code:
 
@@ -101,12 +103,13 @@ async function doSomethingWithAPI() {
 }
 ```
 
-In renderer process code:
+In renderer / app process code:
 
 ```typescript
 import {remote} from 'electron';
+import {api} from 'somewhere'
 
-const auth = remote.require('./auth');
+const auth = remote.require('./auth'); // depending where you put 'auth.js'
 
 async function doSomethingWithAPI() {
     const token = await auth.getToken();
