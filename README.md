@@ -20,6 +20,8 @@ Make sure you have an Auth0 application set up for your Electron app (as a 'nati
 
 `https://{your-auth0-domain}/mobile`
 
+Get your "Audience URL" from the Auth0 interface under "APIs'
+
 ### Dependencies
 
 ```
@@ -30,9 +32,9 @@ npm install electron-auth0-login --save
 npm install request request-promise-native --save
 ```
 
-### Initialisation
+### Initialization
 
-**Note: you should add the initialisation code to your main process.**
+**Note: you should add the initialization code to your main process.**
 
 Create a module called `auth.ts`/`auth.js`: 
 
@@ -67,7 +69,7 @@ Then run Electron-Rebuild:
 
 Call this again every time you upgrade Electron.
 
-### Initialisation
+### Initialization
 
 The application config then requires a few tweaks. Again, this code **must be in your main process, not app process**:
 
