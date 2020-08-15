@@ -48,6 +48,8 @@ const auth = new ElectronAuth0Login({
 });
 ```
 
+You can get your "Audience URL" from the Auth0 interface, under "APIs'
+
 ## Advanced setup - with refresh tokens
 
 To store refresh tokens securely, we use the [node-keytar](https://github.com/atom/node-keytar) package as an optional peerDependency. This uses native code to call Credential Store on Windows, Keychain on Mac, or libsecret on Linux. As such it must be compiled against your Electron v8 version using `electron-rebuild`.
