@@ -55,7 +55,7 @@ To store refresh tokens securely, we use the [node-keytar](https://github.com/at
 ### Dependencies & compile
 
 ```
-npm install node-keytar --save
+npm install keytar --save
 npm install electron-rebuild --save-dev
 ```
 

@@ -60,7 +60,7 @@ export default class ElectronAuth0Login {
         }
 
         if (config.useRefreshTokens && !keytar) {
-            console.warn('electron-auth0-login: cannot use refresh tokens without node-keytar installed');
+            console.warn('electron-auth0-login: cannot use refresh tokens without keytar installed');
         }
     }
 
