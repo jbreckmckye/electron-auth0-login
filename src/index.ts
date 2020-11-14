@@ -16,7 +16,8 @@ export interface Config {
     auth0Domain: string,
     auth0Scopes: string, // What permissions do we want?
     useRefreshTokens?: boolean,
-    windowConfig?: object
+    windowConfig?: object,
+    auth0Params?: object
 }
 
 interface Auth0TokenResponse {
@@ -134,7 +135,8 @@ export default class ElectronAuth0Login {
                 client_id: this.config.auth0ClientId,
                 code_challenge: pkcePair.challenge,
                 code_challenge_method: 'S256',
-                redirect_uri: `https://${this.config.auth0Domain}/mobile`
+                redirect_uri: `https://${this.config.auth0Domain}/mobile`,
+                ...this.config.auth0Params
             });
 
             const authWindow = new BrowserWindow(this.windowConfig);

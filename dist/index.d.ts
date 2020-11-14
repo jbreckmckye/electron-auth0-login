@@ -6,6 +6,7 @@ export interface Config {
     auth0Scopes: string;
     useRefreshTokens?: boolean;
     windowConfig?: object;
+    auth0Params?: object;
 }
 export default class ElectronAuth0Login {
     private config;

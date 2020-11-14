@@ -82,7 +82,11 @@ export new ElectronAuth0Login({
     auth0Domain: 'my-domain.eu.auth0.com',
     auth0Scopes: 'given_name profile offline_access', // add 'offline_access'
     applicationName: 'my-cool-app', // add an application name
-    useRefreshTokens: true // add useRefreshTokens: true
+    useRefreshTokens: true, // add useRefreshTokens: true
+    auth0Params: {
+        //your custom auth0 parameters
+        connection_scope: 'offline_access' // etc..
+    }
 });
 ```
 
