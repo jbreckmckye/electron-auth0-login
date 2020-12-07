@@ -13,6 +13,7 @@ export default class ElectronAuth0Login {
     private tokenProperties;
     private useRefreshToken;
     private windowConfig;
+    private logoutWindowConfig;
     constructor(config: Config);
     logout(): Promise<void>;
     getToken(): Promise<string>;
