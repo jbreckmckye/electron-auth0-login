@@ -44,6 +44,13 @@ export default class ElectronAuth0Login {
         backgroundColor: '#202020'
     };
 
+    private logoutWindowConfig = {
+        ...this.windowConfig,
+        skipTaskbar: true,
+        show: false,
+        frame: false
+    };
+
     constructor(config: Config) {
         this.config = config;
         this.tokenProperties = null;
@@ -67,9 +74,21 @@ export default class ElectronAuth0Login {
 
     public async logout() {
         this.tokenProperties = null;
+
         if (this.useRefreshToken) {
             await keytar.deletePassword(this.config.applicationName, 'refresh-token');
         }
+
+        await new Promise((resolve, reject) => {
+            const logoutWindow = new BrowserWindow(this.logoutWindowConfig);
+
+            logoutWindow.webContents.on('did-navigate' as any, (event: any, href: string) => {
+                logoutWindow.destroy();
+                resolve();
+            });
+
+            logoutWindow.loadURL(`https://${this.config.auth0Domain}/v2/logout`);
+        })
     }
 
     public async getToken(): Promise<string> {

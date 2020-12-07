@@ -28,6 +28,7 @@ class ElectronAuth0Login {
             title: 'Log in',
             backgroundColor: '#202020'
         };
+        this.logoutWindowConfig = Object.assign({}, this.windowConfig, { skipTaskbar: true, show: false, frame: false });
         this.config = config;
         this.tokenProperties = null;
         this.useRefreshToken = !!(config.useRefreshTokens && config.applicationName && keytar);
@@ -47,6 +48,14 @@ class ElectronAuth0Login {
             if (this.useRefreshToken) {
                 yield keytar.deletePassword(this.config.applicationName, 'refresh-token');
             }
+            yield new Promise((resolve, reject) => {
+                const logoutWindow = new electron_1.BrowserWindow(this.logoutWindowConfig);
+                logoutWindow.webContents.on('did-navigate', (event, href) => {
+                    logoutWindow.destroy();
+                    resolve();
+                });
+                logoutWindow.loadURL(`https://${this.config.auth0Domain}/v2/logout`);
+            });
         });
     }
     getToken() {
