@@ -1,0 +1,55 @@
+get auth
+
+read token
+verify token -> result
+read refresh
+exchange refresh
+verify exchange -> result | delete refresh
+start login
+verify process -> result
+throw ex
+
+
+login process
+
+create keypair
+navigate
+await redirect
+exchange keys
+resolve or reject
+
+
+Services
+
+token storage
+refresh storage
+webpage with url & callback
+auth0 api
+logger
+
+
+Composition
+
+const defaultAdapters = adapters(
+  tokenStore,
+  auth0LoginPage,
+  auth0LogoutPage,
+  auth0HttpAPI,
+  logging
+);
+
+export const auth = library(defaultAdapters);
+
+export const authWithKeytar = (keytar) => library(
+  adapters(
+    defaultAdapters,
+    keytarRefreshTokens(keytar)
+  )
+);
+
+export const customLogin = (loginPageOptions) => library(
+  adapters(
+    defaultAdapters,
+    auth0LoginPage(loginPageOptions)
+  )
+)
