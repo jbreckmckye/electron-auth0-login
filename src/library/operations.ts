@@ -62,7 +62,7 @@ export async function login (ctx: Context): Promise<string> {
 
     const pkcePair = cryptography.getPKCEChallengePair();
 
-    const authCode = await authWindow.login();
+    const authCode = await authWindow.login(pkcePair);
     const token = await authAPI.exchangeAuthCode(authCode, pkcePair);
 
     const { access_token, refresh_token } = token;

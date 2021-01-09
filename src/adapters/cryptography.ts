@@ -3,6 +3,9 @@ import { Adapter, PKCEPair } from '../types';
 
 export const cryptography: Adapter<'cryptography'> = () => {
     return {
+        /**
+         * PKCE requires a cryptographic pair of a random b64 string encoded, then the encoded hash of the first string
+         */
         getPKCEChallengePair: (): PKCEPair => {
             const seed = base64random(32);
             const verifier = urlEncodeBase64String(seed);

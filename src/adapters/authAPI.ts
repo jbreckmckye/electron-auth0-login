@@ -3,6 +3,9 @@ import https, { RequestOptions } from 'https';
 
 export const authAPI: Adapter<'authAPI'> = (config) => {
     return {
+        /**
+         * After receiving auth code, use second half of PKCE pair to get a token (PKCE second leg)
+         */
         exchangeAuthCode: (authCode, pair) => post<TokenResponse>({
             grant_type: 'authorization_code',
             client_id: config.auth0.clientId,
@@ -11,6 +14,9 @@ export const authAPI: Adapter<'authAPI'> = (config) => {
             redirect_uri: `https://${config.auth0.domain}/mobile`
         }),
 
+        /**
+         * Used to restore login state for 'persistent login'
+         */
         exchangeRefreshToken: (refreshToken) => post<TokenResponse>({
             grant_type: 'refresh_token',
             client_id: config.auth0.clientId,

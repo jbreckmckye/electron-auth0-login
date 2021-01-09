@@ -16,7 +16,7 @@ export type Context = {
         exchangeAuthCode(authCode: string, pair: PKCEPair): Promise<TokenResponse>,
     },
     authWindow: {
-        login(): Promise<string>,
+        login(pair: PKCEPair): Promise<string>,
         logout(): Promise<void>,
     },
     cryptography: {
@@ -51,9 +51,12 @@ export type Config = {
         domain: string,
         scopes: string
     },
-    login: {
+    login?: {
         windowConfig?: object,
         authorizeParams?: object
+    },
+    logout?: {
+        windowConfig?: object
     },
     refreshTokens?:
         | { keytar: typeof keytar, appName: string }

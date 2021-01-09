@@ -10,6 +10,9 @@ export const refreshTokens: Adapter<'refreshTokens'> = (config) => {
         return keytarAdapter(cfg.keytar, cfg.appName);
 
     } else {
+        /**
+         * Use user-supplied refresh token store
+         */
         return cfg.store;
     }
 }

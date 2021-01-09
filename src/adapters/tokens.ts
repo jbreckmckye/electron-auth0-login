@@ -7,10 +7,16 @@ export const tokens: Adapter<'tokens'> = () => {
     let expiresAt: number | null = null;
 
     return {
+        /**
+         * Forget the token
+         */
         async delete() {
             tokenResponse = null;
         },
 
+        /**
+         * When does the token expire?
+         */
         expiresIn: () => expiresAt
             ? expiresAt - epochSeconds()
             : Infinity,
