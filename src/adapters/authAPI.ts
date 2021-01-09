@@ -1,7 +1,7 @@
 import { Adapter, TokenResponse } from '../types';
 import https, { RequestOptions } from 'https';
 
-export const adapter: Adapter<'authAPI'> = (config) => {
+export const authAPI: Adapter<'authAPI'> = (config) => {
     return {
         exchangeAuthCode: (authCode, pair) => post<TokenResponse>({
             grant_type: 'authorization_code',
