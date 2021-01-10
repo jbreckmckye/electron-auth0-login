@@ -67,8 +67,3 @@ export type Store <T> = {
     get(): Promise<T | null>,
     set(t: T): Promise<void>
 }
-
-export type KeytarConfig = {
-    keytar: typeof keytar,
-    serviceName: string
-}
