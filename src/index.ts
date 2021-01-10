@@ -12,7 +12,7 @@ import {
     tokens
 } from './adapters';
 
-export default function (config: Config) {
+export = function (config: Config) {
     let adapter = mergeAdapters(
         authAPI,
         authWindow,
