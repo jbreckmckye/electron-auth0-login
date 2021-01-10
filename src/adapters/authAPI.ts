@@ -1,8 +1,10 @@
 import { Adapter, TokenResponse } from '../types';
-import https, { RequestOptions } from 'https';
+import { adapter } from '../framework';
 
-export const authAPI: Adapter<'authAPI'> = (config) => {
-    return {
+export const authAPI: Adapter = (op, ctx, config) => {
+    const { post } = ctx.net!;
+
+    return adapter(op, 'authAPI', {
         /**
          * After receiving auth code, use second half of PKCE pair to get a token (PKCE second leg)
          */
@@ -22,30 +24,5 @@ export const authAPI: Adapter<'authAPI'> = (config) => {
             client_id: config.auth0.clientId,
             refresh_token: refreshToken
         })
-    }
-}
-
-function post <O>(input: object, opts?: RequestOptions) {
-    const content = JSON.stringify(input);
-
-    const options: RequestOptions = {
-        port: 443,
-        method: 'POST',
-        headers: {
-           'Content-Type': 'application/json',
-           'Content-Length': content.length
-        },
-        ...opts
-    };
-
-    return new Promise((resolve, reject) => {
-        const request = https.request(options, resp => {
-            resp.on('data', resolve);
-        });
-
-        request.on('error', reject);
-
-        request.write(content);
-        request.end();
-    }) as Promise<O>;
+    });
 }

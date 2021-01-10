@@ -1,11 +1,20 @@
 // Used for types only; this library does not bundle keytar
 import keytar from 'keytar';
+import { RequestOptions } from 'https';
+
 export type Keytar = typeof keytar;
 
-export type Adapter <K extends keyof Context> = (config: Config) => Context[K];
-export type MergedAdapter = (config: Config) => Context;
+
+
+// export type Adapter <K extends keyof Context> = (config: Config) => Context[K];
+// export type MergedAdapter = (config: Config) => Context;
 
 export type Operation <I, O> = (ctx: Context, input: I) => O;
+
+export type Adapter <I = any, O = any> = (op: Operation<I, O>, ctx: Partial<Context>, cfg: Config) => {
+    op: Operation<I, O>,
+    ctx: Partial<Context>
+};
 
 export type Context = {
     authAPI: {
@@ -21,6 +30,9 @@ export type Context = {
     },
     cryptography: {
         getPKCEChallengePair(): PKCEPair
+    },
+    net: {
+        post <O> (input: object, opts?: RequestOptions): Promise<O>
     },
     logger: {
         warn(...s: string[]): void
