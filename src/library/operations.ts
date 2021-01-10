@@ -7,36 +7,41 @@ import { Context } from '../types';
 export async function getToken (ctx: Context): Promise<string> {
     const {
         authAPI,
-        logger,
+        logger: {
+            warn,
+            debug
+        },
         tokens,
         refreshTokens
     } = ctx;
 
+    debug('Retrieving token from store');
     const token = await tokens.get();
 
     if (token && tokens.expiresIn() > 60) {
-        // We have a valid token - use it
+        debug('Using fresh token from store');
         return token.access_token;
     }
 
     if (refreshTokens) {
+        debug('Falling back to refresh token');
         const refreshToken = await refreshTokens.get();
 
-        // Attempt to use refresh token
         if (refreshToken) {
             try {
+                debug('Attempting to use refresh token');
                 const token = await authAPI.exchangeRefreshToken(refreshToken);
                 await tokens.set(token);
                 return token.access_token;
 
             } catch (err) {
-                logger.warn(`Could not use refresh token, may have been revoked`);
+                warn(`Could not use refresh token, may have been revoked`);
                 await refreshTokens.delete();
             }
         }
     }
 
-    // If all else failed, we need to start a new login flow
+    debug('No valid token or refresh token available; starting new login flow');
     return login(ctx);
 }
 
@@ -56,22 +61,28 @@ export async function login (ctx: Context): Promise<string> {
         authAPI,
         authWindow,
         cryptography,
+        logger: { debug },
         refreshTokens,
         tokens
     } = ctx;
 
-    const pkcePair = cryptography.getPKCEChallengePair();
+    debug('Beginning login');
 
+    const pkcePair = cryptography.getPKCEChallengePair();
     const authCode = await authWindow.login(pkcePair);
     const token = await authAPI.exchangeAuthCode(authCode, pkcePair);
+
+    debug('Recieved token from Auth0');
 
     const { access_token, refresh_token } = token;
 
     if (refreshTokens && refresh_token) {
+        debug('Setting refresh token');
         await refreshTokens.set(refresh_token);
     }
 
     await tokens.set(token);
+    debug('Login successful');
 
     return access_token;
 }
@@ -83,6 +94,7 @@ export async function logout (ctx: Context) {
     const {
         authWindow,
         refreshTokens,
+        logger: { debug },
         tokens
     } = ctx;
 
@@ -91,4 +103,6 @@ export async function logout (ctx: Context) {
         authWindow.logout(),
         refreshTokens && refreshTokens.delete()
     ]);
+
+    debug('Logged out successfully');
 }

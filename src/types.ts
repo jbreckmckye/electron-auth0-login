@@ -22,6 +22,7 @@ export type Context = {
         getPKCEChallengePair(): PKCEPair
     },
     logger: {
+        debug(...s: string[]): void,
         warn(...s: string[]): void
     },
     tokens: Store<TokenResponse> & {
@@ -44,6 +45,7 @@ export type TokenResponse = {
 }
 
 export type Config = {
+    debug?: boolean,
     auth0: {
         audience: string,
         clientId: string,
