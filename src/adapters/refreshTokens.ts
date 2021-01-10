@@ -1,24 +1,14 @@
 import { Adapter, Keytar } from '../types';
+import { context } from '../framework';
 
-export const refreshTokens: Adapter<'refreshTokens'> = (config) => {
-    const cfg = config.refreshTokens;
-
-    if (!cfg) {
-        return undefined;
-
-    } else if ('keytar' in cfg) {
-        return keytarAdapter(cfg.keytar, cfg.appName);
-
-    } else {
-        /**
-         * Use user-supplied refresh token store
-         */
-        return cfg.store;
+export const keytarRefreshTokens: Adapter = (config) => {
+    if (!config.refreshTokens || !('keytar' in config.refreshTokens)) {
+        throw new Error('No keytar on config');
     }
-}
 
-export function keytarAdapter (keytar: Keytar, appName: string) {
-    return {
+    const { keytar, appName } = config.refreshTokens;
+
+    return context('refreshTokens', {
         get: () => keytar.getPassword(appName, 'refresh-token'),
 
         async set(password: string) {
@@ -28,5 +18,13 @@ export function keytarAdapter (keytar: Keytar, appName: string) {
         async delete() {
             await keytar.deletePassword(appName, 'refresh-token');
         }
+    });
+};
+
+export const customRefreshTokens: Adapter = (config) => {
+    if (!config.refreshTokens || !('store' in config.refreshTokens)) {
+        throw new Error('No refresh token store on config');
     }
-}
+
+    return context('refreshTokens', config.refreshTokens.store);
+};

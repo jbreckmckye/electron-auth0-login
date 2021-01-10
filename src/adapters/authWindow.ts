@@ -1,9 +1,10 @@
-import { Adapter, Config } from '../types';
 import { BrowserWindow } from 'electron';
 import qs from 'qs';
 import url from 'url';
+import { Adapter, Config } from '../types';
+import { context } from '../framework';
 
-export const authWindow: Adapter<'authWindow'> = (config: Config) => {
+export const authWindow: Adapter = (config) => {
     const baseWinConfig = {
         width: 800,
         height: 600,
@@ -19,7 +20,7 @@ export const authWindow: Adapter<'authWindow'> = (config: Config) => {
         frame: false
     };
 
-    return {
+    return context('authWindow', {
         /**
          * Open a browser window to get an auth code, passing through the first part of the PKCE pair (PKCE first leg)
          */
@@ -52,7 +53,9 @@ export const authWindow: Adapter<'authWindow'> = (config: Config) => {
                 }
             });
 
-            loginWindow.on('close', reject);
+            loginWindow.on('close', () => {
+                reject();
+            });
 
             loginWindow.loadURL(authCodeUrl);
         }),
@@ -76,5 +79,5 @@ export const authWindow: Adapter<'authWindow'> = (config: Config) => {
 
             setTimeout(() => reject(new Error('Logout timed out')), 60 * 1000);
         })
-    }
-}
+    })
+};

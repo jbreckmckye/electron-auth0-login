@@ -1,7 +1,6 @@
 import { Adapter } from '../types';
+import { context } from '../framework';
 
-export const logger: Adapter<'logger'> = () => {
-    return {
-        warn: (...s: string[]) => console.warn(...s)
-    }
-}
+export const logger: Adapter = () => context('logger', {
+    warn: (...s: string[]) => console.warn(...s)
+});

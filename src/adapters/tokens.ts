@@ -1,22 +1,17 @@
 import { Adapter, TokenResponse } from '../types';
+import { context } from '../framework';
 
 const epochSeconds = () => Date.now() / 1000;
 
-export const tokens: Adapter<'tokens'> = () => {
+export const tokens: Adapter = () => {
     let tokenResponse: TokenResponse | null = null;
     let expiresAt: number | null = null;
 
-    return {
-        /**
-         * Forget the token
-         */
+    return context('tokens', {
         async delete() {
             tokenResponse = null;
         },
 
-        /**
-         * When does the token expire?
-         */
         expiresIn: () => expiresAt
             ? expiresAt - epochSeconds()
             : Infinity,
@@ -29,5 +24,5 @@ export const tokens: Adapter<'tokens'> = () => {
             tokenResponse = resp;
             expiresAt = epochSeconds() + resp.expires_in;
         }
-    }
-}
+    })
+};
