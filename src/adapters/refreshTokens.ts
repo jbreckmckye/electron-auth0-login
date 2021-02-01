@@ -1,10 +1,11 @@
 import { Adapter, Keytar } from '../types';
 import { context } from '../framework';
 
+
 export const keytarRefreshTokens: Adapter = (config) => {
-    if (!config.refreshTokens || !('keytar' in config.refreshTokens)) {
-        throw new Error('No keytar on config');
-    }
+    if (!config.refreshTokens)                  throw new Error(`No config.refreshTokens`);
+    if (!('keytar' in config.refreshTokens))    throw new Error(`No refreshTokens.keytar`);
+    if (!('appName' in config.refreshTokens))   throw new Error(`No refreshTokens.appName`);
 
     const { keytar, appName } = config.refreshTokens;
 

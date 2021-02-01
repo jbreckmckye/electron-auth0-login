@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 import qs from 'qs';
 import url from 'url';
-import { Adapter, Config } from '../types';
+import { Adapter } from '../types';
 import { context } from '../framework';
 
 export const authWindow: Adapter = (config) => {
@@ -25,9 +25,14 @@ export const authWindow: Adapter = (config) => {
          * Open a browser window to get an auth code, passing through the first part of the PKCE pair (PKCE first leg)
          */
         login: (pair) => new Promise((resolve, reject) => {
+            const scopes = config.auth0.scopes.split(' ');
+            if (config.refreshTokens) {
+                scopes.push('offline_access');
+            }
+
             const authCodeUrl = `https://${config.auth0.domain}/authorize?` + qs.stringify({
                 audience: config.auth0.audience,
-                scope: config.auth0.scopes,
+                scope: scopes.join(' '),
                 response_type: 'code',
                 client_id: config.auth0.clientId,
                 code_challenge: pair.challenge,

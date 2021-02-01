@@ -72,13 +72,17 @@ export async function login (ctx: Context): Promise<string> {
     const authCode = await authWindow.login(pkcePair);
     const token = await authAPI.exchangeAuthCode(authCode, pkcePair);
 
-    debug('Recieved token from Auth0');
+    debug('Received token from Auth0');
 
     const { access_token, refresh_token } = token;
 
-    if (refreshTokens && refresh_token) {
-        debug('Setting refresh token');
-        await refreshTokens.set(refresh_token);
+    if (refreshTokens) {
+        if (refresh_token) {
+            debug('Setting refresh token');
+            await refreshTokens.set(refresh_token);
+        } else {
+            debug('Refresh tokens are enabled but none was returned by API');
+        }
     }
 
     await tokens.set(token);
