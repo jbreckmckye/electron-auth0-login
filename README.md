@@ -32,6 +32,13 @@ You can find out more about the library's features in the [API guide](docs/api.m
 - support for non-Keytar refresh token libraries
 - support for future extensibility
 
+
+### Problems?
+
+If you're having problems with the latest v2 release, try `npm install electron-auth0-login@1.4.1`.
+
+Docs for the old release are [here](https://github.com/jbreckmckye/electron-auth0-login/blob/e9ec555455ab185fc1e07a9d8e8c1c34a6f082b8/README.md).
+
 ## Quick start guide: getting auth tokens
 
 Install using NPM or Yarn:
