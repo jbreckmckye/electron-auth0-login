@@ -1,161 +1,116 @@
 # Electron Auth0 Login
 
-Enables Auth0 login for your Electron.js app.
+Enables Auth0 login within your ⚛ Electron application, using proof-key-for-code-exchange (PKCE)
 
-Usage is simple: you call a `getToken` method, and one of three things happens (in order of preference):
+- 🔒 Uses the industry-standard PKCE flow, as [recommended](https://auth0.com/docs/flows/authorization-code-flow-with-proof-key-for-code-exchange-pkce) by Auth0 for native apps
+- ⏩ Easy setup and a simple promise-based API
+- ♻ Supports refresh tokens for 'login once' functionality
+- ✔ TypeScript support
+- ✌ Provided under MIT license
+
+## What exactly does this do?
+
+When asked for an auth token, this library will try the following:
 
 1. If you have a valid token in memory, and won't expire in the next 60 seconds, we return it
 2. If you have a refresh token, we exchange it for a new token
 3. If you have no refresh token (or have refresh tokens disabled), we open a new window with the Auth0 login page and begin a PKCE flow.
 
-Refresh tokens are stored securely on the user's machine using [node-keytar](https://github.com/atom/node-keytar).
+You can find out more about the library's features in the [API guide](docs/api.md)
 
-Supports TypeScript out of the box.
+## Docs
 
-## Simple setup (without refresh tokens)
+- [Quick start guide below](#quick-start-guide-getting-auth-tokens)
+- [Full setup guide](docs/setup.md)
+- [Full API guide](docs/api.md)
 
-### Auth0 setup
+## New version!
 
-Make sure you have an Auth0 application set up for your Electron app (as a 'native' type, not 'machine-to-machine') and have whitelisted the following redirect URL:
+💥 Version 2 now out! New features include:
 
-`https://{your-auth0-domain}/mobile`
+- easier setup with no need for peer dependencies
+- support for non-Keytar refresh token libraries
+- support for future extensibility
 
-### Dependencies
+## Quick start guide: getting auth tokens
 
+Install using NPM or Yarn:
+
+```shell script
+# NPM
+npm install electron-auth0-login
+
+# Yarn
+yarn add electron-auth0-login
 ```
-# Installing electron-auth0-login
-npm install electron-auth0-login --save
 
-# Installing peer dependencies
-npm install request request-promise-native --save
-```
+Set up an application in the Auth0 console:
 
-### Initialisation
+- create a `native` application (not `machine-to-machine`)
+- set up an "Allowed callback URL" for `https://{your auth0 domain}/mobile`
 
-**Note: you should add the initialisation code to your main process.**
-
-Create a module called `auth.ts`/`auth.js`: 
+Create a file called `auth.ts`/`auth.js`:
 
 ```typescript
-import ElectronAuth0Login from 'electron-auth0-login';
+import auth0Login from 'electron-auth0-login';
 
-const auth = new ElectronAuth0Login({
-    // Get these from your Auth0 application console
-    auth0Audience: 'https://api.mydomain.com',
-    auth0ClientId: 'abc123ghiMyApp',
-    auth0Domain: 'my-domain.eu.auth0.com',
-    auth0Scopes: 'given_name profile'
+// Only import this directly into your main process
+// For the rendering process, use electron.remote.require()
+
+export default auth0Login({
+  // Get these values from your Auth0 application console
+  auth0: {
+    audience: 'url',
+    clientId: 'long base64 string',
+    domain: 'url',
+    scopes: 'these will be custom to your application'
+ }
 });
 ```
 
-You can get your "Audience URL" from the Auth0 interface, under "APIs'
+### Getting a token
 
-## Advanced setup - with refresh tokens
-
-To store refresh tokens securely, we use the [node-keytar](https://github.com/atom/node-keytar) package as an optional peerDependency. This uses native code to call Credential Store on Windows, Keychain on Mac, or libsecret on Linux. As such it must be compiled against your Electron v8 version using `electron-rebuild`.
-
-### Dependencies & compile
-
-```
-npm install keytar --save
-npm install electron-rebuild --save-dev
-```
-
-Then run Electron-Rebuild:
-
-```
-./node_modules/.bin/electron-rebuild
-```
-
-Call this again every time you upgrade Electron.
-
-### Initialisation
-
-The application config then requires a few tweaks. Again, this code **must be in your main process, not app process**:
+In your **main process**, you can just import the library directly:
 
 ```typescript
-import ElectronAuth0Login from 'electron-auth0-login';
+// In your main.ts file, or a file imported by main.ts
+import { getToken } from './auth';
 
-export new ElectronAuth0Login({
-    auth0Audience: 'https://api.mydomain.com',
-    auth0ClientId: 'abc123ghiMyApp',
-    auth0Domain: 'my-domain.eu.auth0.com',
-    auth0Scopes: 'given_name profile offline_access', // add 'offline_access'
-    applicationName: 'my-cool-app', // add an application name
-    useRefreshTokens: true, // add useRefreshTokens: true
-    auth0Params: {
-        //your custom auth0 parameters
-        connection_scope: 'offline_access' // etc..
+async function example() {
+  // Example: using a bearer token
+  const token = await getToken();
+  apiCall({
+    headers: {
+      Authorization: `Bearer ${token}`
     }
-});
-```
-
-## Usage
-
-You can call `getToken` any time you need an auth0 token, in either the main or app process:
-
-In main process code:
-
-```typescript
-import auth from './auth'; // module defined above
-
-async function doSomethingWithAPI() {
-    const token = await auth.getToken();
-    api.get('/things', {
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    });
+  });
 }
 ```
 
-In renderer / app process code:
+In the **rendering process**, you need to use `electron.remote.require`:
 
 ```typescript
-import {remote} from 'electron';
-import {api} from 'somewhere'
+import { remote } from 'electron';
 
-const auth = remote.require('./auth'); // depending where you put 'auth.js'
+const { getToken } = remote.require('./auth'); // depending where you put 'auth.ts'
 
-async function doSomethingWithAPI() {
-    const token = await auth.getToken();
-    api.get('/things', {
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    });
+async function example() {
+  // Example: using a bearer token
+  const token = await getToken();
+  apiCall({
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 }
 ```
 
-## Configuring the login window
+For more details, including advanced options and refresh tokens, take a look at the [[Setup guide]](docs/setup.md).
 
-You can also pass options to the electron `BrowserWindow` by adding a `windowOptions` object to your config, e.g.
+## General details
 
-```typescript
-const auth = new ElectronAuth0Login({
-    auth0Audience: 'https://api.mydomain.com',
-    auth0ClientId: 'abc123ghiMyApp',
-    auth0Domain: 'my-domain.eu.auth0.com',
-    auth0Scopes: 'given_name profile',
-    windowOptions: {
-        width: 1024,
-        height: 640,
-    }
-});
-```
+This library is made available under the MIT license: see [LICENSE].
 
-These options will be merged into the default options, which are
+It was originally inspired by @adeperio's Electron PKCE example: https://gist.github.com/adeperio/73ce6680d4b80b45e624ab62bacfbdca
 
-```
-{
-    width: 800,
-    height: 600,
-    alwaysOnTop: true,
-    title: 'Log in',
-    backgroundColor: '#202020'
-};
-```
-
-## Credits
-
-This package is based loosely on @adeperio's Electron PKCE example: https://gist.github.com/adeperio/73ce6680d4b80b45e624ab62bacfbdca
+Copyright 2018-2021 Jimmy Breck-McKye.
