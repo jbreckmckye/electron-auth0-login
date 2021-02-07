@@ -53,7 +53,7 @@ export function isLoggedIn (ctx: Context) {
 }
 
 /**
- * Manually start a login flow. Note that this will not return a token.
+ * Manually start a login flow.
  * If you just want a token, use getToken(), which will log in only if we don't have a token available.
  */
 export async function login (ctx: Context): Promise<string> {

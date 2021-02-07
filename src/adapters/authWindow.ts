@@ -7,7 +7,7 @@ import { context } from '../framework';
 export const authWindow: Adapter = (config) => {
     const baseWinConfig = {
         width: 800,
-        height: 600,
+        height: 800,
         alwaysOnTop: true,
         backgroundColor: '#202020'
     };
