@@ -18,13 +18,13 @@ When asked for an auth token, this library will try the following:
 2. If you have a refresh token, we exchange it for a new token
 3. If you have no refresh token (or have refresh tokens disabled), we open a new window with the Auth0 login page and begin a PKCE flow.
 
-You can find out more about the library's features in the [API guide](docs/api.md).
+Discover more features in the [API docs](docs/api.md).
 
 ## 📖 Docs
 
 - [Quick start guide below](#quick-start-guide-getting-auth-tokens)
 - [Setup guide](docs/setup.md)
-- [API reference](docs/api.md)
+- [API docs](docs/api.md)
 
 ## New version!
 
