@@ -15,7 +15,7 @@ The library exports a factory function that has to be called inside your **main 
 
 ```typescript
 // Inside main.ts or one of its dependencies
-import auth0Login from 'electron-auth0-login';
+import { auth0Login } from 'electron-auth0-login';
 ```
 
 If you need to use the library from within the **renderer** process, see the example in the Quick Start guide.

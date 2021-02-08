@@ -15,7 +15,7 @@ export function mergeAdapters (...adapters: Adapter[]): Adapter {
 }
 
 export function $applyCtx (ctx: Context) {
-    return function <I, O>(op: Operation<I, O>) {
-        return (input: I) => op(ctx, input);
+    return function <I, O>(op: Operation<I, O>): I extends unknown ? () => O : (input: I) => O {
+        return ((input: I) => op(ctx, input)) as any;
     }
 }
