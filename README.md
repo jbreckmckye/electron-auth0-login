@@ -63,7 +63,7 @@ Set up an application in the Auth0 console:
 Create a file called `auth.ts`/`auth.js`:
 
 ```typescript
-import auth0Login from 'electron-auth0-login';
+import { auth0Login } from 'electron-auth0-login';
 
 // Only import this directly into your main process
 // For the rendering process, use electron.remote.require()
