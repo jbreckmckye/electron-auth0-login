@@ -4,7 +4,7 @@ import { Context } from '../types';
  * Return a usable auth token or, failing that, try to get a new one
  * You should use this whenever you want to auth e.g. an API request
  */
-export async function getToken (ctx: Context): Promise<string> {
+export async function getToken(ctx: Context): Promise<string> {
     const {
         authAPI,
         logger: {
@@ -48,15 +48,15 @@ export async function getToken (ctx: Context): Promise<string> {
 /**
  * Check whether we are logged in
  */
-export function isLoggedIn (ctx: Context) {
-    return !!ctx.tokens.get();
+export async function isLoggedIn(ctx: Context) {
+    return !!await ctx.tokens.get();
 }
 
 /**
  * Manually start a login flow.
  * If you just want a token, use getToken(), which will log in only if we don't have a token available.
  */
-export async function login (ctx: Context): Promise<string> {
+export async function login(ctx: Context): Promise<string> {
     const {
         authAPI,
         authWindow,
@@ -94,7 +94,7 @@ export async function login (ctx: Context): Promise<string> {
 /**
  * Log the user out
  */
-export async function logout (ctx: Context) {
+export async function logout(ctx: Context) {
     const {
         authWindow,
         refreshTokens,
