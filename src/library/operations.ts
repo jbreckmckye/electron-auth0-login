@@ -48,8 +48,8 @@ export async function getToken (ctx: Context): Promise<string> {
 /**
  * Check whether we are logged in
  */
-export function isLoggedIn (ctx: Context) {
-    return !!ctx.tokens.get();
+export async function isLoggedIn (ctx: Context) {
+    return !!await ctx.tokens.get();
 }
 
 /**
