@@ -46,7 +46,7 @@ export const authWindow: Adapter = (config) => {
                 ...baseWinConfig,
                 title: 'Log in',
                 // Custom parameters
-                ...config.logout?.windowConfig
+                ...config.login?.windowConfig
             });
 
             loginWindow.webContents.on('did-navigate', (event, href) => {
