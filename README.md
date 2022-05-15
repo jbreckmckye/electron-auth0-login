@@ -63,6 +63,7 @@ Set up an application in the Auth0 console:
 Create a file called `auth.ts`/`auth.js`:
 
 ```typescript
+// For JS use require() instead
 import { auth0Login } from 'electron-auth0-login';
 
 // Only import this directly into your main process
@@ -85,6 +86,7 @@ In your **main process**, you can just import the library directly:
 
 ```typescript
 // In your main.ts file, or a file imported by main.ts
+// For JS use require() instead
 import { getToken } from './auth';
 
 async function example() {
@@ -101,6 +103,7 @@ async function example() {
 In the **rendering process**, you need to use `electron.remote.require`:
 
 ```typescript
+// For JS use require() instead
 import { remote } from 'electron';
 
 const { getToken } = remote.require('./auth'); // depending where you put 'auth.ts'
