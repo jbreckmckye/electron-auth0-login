@@ -37,6 +37,8 @@ export type Config = {
         domain: string,
         // This will be custom to your application, e.g. 'given_name profile'
         scopes: string
+        // Optional Field; This will be the database connection you specify (prefered to use when have multiple connections), it uses the default connection when value isn't provided
+        connection?: string
     },
 
     // Customise the login
