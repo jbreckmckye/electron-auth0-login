@@ -38,6 +38,7 @@ export const authWindow: Adapter = (config) => {
                 code_challenge: pair.challenge,
                 code_challenge_method: 'S256',
                 redirect_uri: `https://${config.auth0.domain}/mobile`,
+                connection: config.auth0?.connection,
                 // Custom parameters
                 ...config.login?.authorizeParams
             });

@@ -55,7 +55,8 @@ export type Config = {
         clientId: string,
         domain: string,
         // This will be custom to your application, e.g. 'given_name profile'
-        scopes: string
+        scopes: string,
+        connection?: string
     },
 
     // Customise the login
