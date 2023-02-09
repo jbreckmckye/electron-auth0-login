@@ -1,6 +1,6 @@
 {
   "name": "electron-auth0-login",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Provides Auth0 authentication services for your Electron.js application",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,6 +36,6 @@
     "got": "11.8.1"
   },
   "peerDependencies": {
-    "electron": "^7.1.9"
+    "electron": ">7.1.9"
   }
 }
